@@ -18,7 +18,8 @@ import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.catchThrowable;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
 
@@ -60,7 +61,7 @@ class InventoryServiceImplTest {
     }
 
     @Test
-    @DisplayName("Should throw an IllegalArgumentException")
+    @DisplayName("Should throw an IllegalArgumentException if itemDTO is null")
     void createItem_NullParam_Fail() {
         Throwable throwable = catchThrowable(() -> inventoryService.createItem(null));
 
