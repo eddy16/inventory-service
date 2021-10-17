@@ -13,6 +13,12 @@ public final class InventoryMock {
                 .build();
     }
 
+    public static ItemRequest createItemRequestNotCompliant() {
+        return ItemRequest.builder()
+                .description("Lorem ipsum dolor sit amet, consectetur adipiscing elit")
+                .build();
+    }
+
     public static ItemQuantityRequest createItemQuantityRequest() {
         return ItemQuantityRequest.builder()
                 .code("324567")

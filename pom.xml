@@ -162,7 +162,7 @@
                             <mainClass>org.junit.platform.console.ConsoleLauncher</mainClass>
                             <arguments>
                                 <argument>--details</argument>
-                                <argument>verbose</argument>
+                                <argument>tree</argument>
                                 <argument>--scan-class-path</argument>
                                 <argument>${project.build.directory}/test-classes</argument>
                             </arguments>

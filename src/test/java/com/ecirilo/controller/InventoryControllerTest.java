@@ -1,5 +1,6 @@
 package com.ecirilo.controller;
 
+import com.ecirilo.controller.exception.CustomExceptionHandler;
 import com.ecirilo.controller.mapper.InventoryAPIMapperImpl;
 import com.ecirilo.controller.response.ItemResponse;
 import com.ecirilo.controller.request.ItemQuantityRequest;
@@ -18,17 +19,20 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.hamcrest.Matchers.hasItems;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest
 @ExtendWith(SpringExtension.class)
-@ContextConfiguration(classes = {InventoryController.class, InventoryAPIMapperImpl.class})
+@ContextConfiguration(classes = {InventoryController.class, InventoryAPIMapperImpl.class, CustomExceptionHandler.class})
 class InventoryControllerTest {
 
     @MockBean
@@ -49,6 +53,22 @@ class InventoryControllerTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNoContent());
+    }
+
+    @Test
+    void createItem_BadRequest() throws Exception {
+        doNothing().when(inventoryService).createItem(any());
+        ItemRequest itemRequest = InventoryMock.createItemRequestNotCompliant();
+        mockMvc.perform(post("/inventory/item")
+                        .content(objectMapper.writeValueAsString(itemRequest))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest())
+                .andExpect(mvcResult -> assertThat(mvcResult.getResolvedException()).isInstanceOf(MethodArgumentNotValidException.class))
+                .andExpect(jsonPath("$.errors")
+                        .value(hasItems("code:must not be blank",
+                        "name:must not be blank",
+                        "description:size must be between 0 and 35")));
     }
 
     @Test
